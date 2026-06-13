@@ -118,7 +118,12 @@
       <select id="currency" onchange="onCurrencyChange()"></select>
     </div>
     <div class="field"><label id="lblWeight">Part weight (grams)</label><input id="weight" type="number" step="0.1" value="50"></div>
-    <div class="field"><label id="lblHours">Print time (hours)</label><input id="hours" type="number" step="0.1" value="3"></div>
+    <div class="field"><label id="lblHours">Print time</label>
+      <div class="time-row">
+        <div class="time-cell"><span class="unit" id="unitPrintHrs">hours</span><input id="hours" type="number" step="1" min="0" value="3"></div>
+        <div class="time-cell"><span class="unit" id="unitPrintMin">minutes</span><input id="printMinutes" type="number" step="1" min="0" max="59" value="0"></div>
+      </div>
+    </div>
     <div class="field"><label id="lblKwh">Energy cost (per kWh)</label><input id="kwhCost" type="number" step="0.01" value="0.25"></div>
     <div class="field"><label id="lblWatts">Printer consumption (watts)</label><input id="watts" type="number" step="1" value="120"></div>
     <div class="field"><label id="lblLabor">Labor rate (per hour)</label>
@@ -182,7 +187,7 @@
       subtext:"Calculate the real cost and selling price of your printed parts.",
       save:"💾 Save", load:"📁 Load", reset:"🔄 Reset",
       filament:"Filament cost (per kg)", currency:"Currency", weight:"Part weight (grams)",
-      hours:"Print time (hours)", kwh:"Energy cost (per kWh)", watts:"Printer consumption (watts)",
+      hours:"Print time", kwh:"Energy cost (per kWh)", watts:"Printer consumption (watts)",
       labor:"Labor rate (per hour)", laborHours:"Labor time", unitHrs:"hours", unitMin:"minutes", extras:"Extra materials cost", machine:"Machine cost",
       recover:"Hours to recover investment", fail:"% Error / failure margin", profit:"Profit margin (%)",
       calc:"Calculate cost", final:"Suggested selling price",
@@ -204,7 +209,7 @@
       subtext:"Calcula el costo real y el precio de venta de tus piezas impresas.",
       save:"💾 Guardar", load:"📁 Cargar", reset:"🔄 Reset",
       filament:"Costo del filamento (por kg)", currency:"Moneda", weight:"Peso de la pieza (gramos)",
-      hours:"Tiempo de impresión (horas)", kwh:"Costo de energía (por kWh)", watts:"Consumo de impresora (watts)",
+      hours:"Tiempo de impresión", kwh:"Costo de energía (por kWh)", watts:"Consumo de impresora (watts)",
       labor:"Tarifa de mano de obra (por hora)", laborHours:"Tiempo de mano de obra", unitHrs:"horas", unitMin:"minutos", extras:"Costos materiales extra", machine:"Costo de la máquina",
       recover:"Horas para recuperar inversión", fail:"% Margen de error / falla", profit:"Margen de ganancia (%)",
       calc:"Calcular costo", final:"Precio de venta sugerido",
@@ -222,7 +227,7 @@
     }
   };
 
-  const ids=["filamentKg","weight","hours","kwhCost","watts","laborHour","laborHours","laborMinutes","extras","machineCost","recoverHours","failPct","profitPct"];
+  const ids=["filamentKg","weight","hours","printMinutes","kwhCost","watts","laborHour","laborHours","laborMinutes","extras","machineCost","recoverHours","failPct","profitPct"];
   let lastCalc=null;
   let lang="en";
   let cur=CURRENCIES[0];
@@ -280,6 +285,8 @@
     g("lblCurrency").textContent=t("currency");
     g("lblWeight").textContent=t("weight");
     g("lblHours").textContent=t("hours");
+    g("unitPrintHrs").textContent=t("unitHrs");
+    g("unitPrintMin").textContent=t("unitMin");
     g("lblKwh").textContent=t("kwh");
     g("lblWatts").textContent=t("watts");
     g("lblLabor").textContent=t("labor");
@@ -311,7 +318,7 @@
   }
 
   function calc(){
-    const filamentKg=num("filamentKg"), weight=num("weight"), hours=num("hours");
+    const filamentKg=num("filamentKg"), weight=num("weight"), hours=num("hours")+num("printMinutes")/60;
     const kwhCost=num("kwhCost"), watts=num("watts"), laborHour=num("laborHour"), laborHours=num("laborHours"), laborMinutes=num("laborMinutes");
     const extras=num("extras"), machineCost=num("machineCost"), recoverHours=num("recoverHours");
     const failPct=num("failPct"), profitPct=num("profitPct");
@@ -363,7 +370,7 @@
     calc();
   }
   function reset(){
-    const d={filamentKg:25,weight:50,hours:3,kwhCost:0.25,watts:120,laborHour:0,laborHours:0,laborMinutes:0,extras:0,machineCost:0,recoverHours:3000,failPct:10,profitPct:50};
+    const d={filamentKg:25,weight:50,hours:3,printMinutes:0,kwhCost:0.25,watts:120,laborHour:0,laborHours:0,laborMinutes:0,extras:0,machineCost:0,recoverHours:3000,failPct:10,profitPct:50};
     ids.forEach(i=>document.getElementById(i).value=d[i]);
     try{localStorage.removeItem(STORE_KEY);}catch(e){}
     document.getElementById("result").classList.remove("show");
