@@ -537,8 +537,14 @@
     // Apply automatic discount if qty meets minimum
     const minPrints=Math.max(1,Math.round(num("minPrints"))||1);
     const autoPct=num("discountPct")||0;
-    if(qty>=minPrints&&autoPct>0){bulkPct=autoPct;document.getElementById("discountMsg").textContent=t("discountApplied").replace("{0}",autoPct);}
-    else{document.getElementById("discountMsg").textContent=t("discountMsg").replace("{0}",minPrints);}
+    if(qty>=minPrints&&autoPct>0){
+      bulkPct=autoPct;
+      const msg=lang==="es"?`✓ ¡${autoPct}% descuento aplicado!`:`✓ ${autoPct}% discount applied!`;
+      document.getElementById("discountMsg").textContent=msg;
+    } else {
+      const msg=lang==="es"?`Ingresa cantidad ≥ ${minPrints} para aplicar descuento`:`Enter quantity ≥ ${minPrints} to apply discount`;
+      document.getElementById("discountMsg").textContent=msg;
+    }
     const subtotal=unitPrice*qty;
     const discount=subtotal*(bulkPct/100);
     const grandTotal=subtotal-discount;
